@@ -1,5 +1,4 @@
 # Recursive Summarizer
 
-## DISCLAIMER: INFORMATIONAL AND EXPERIMENTATION PURPOSES ONLY
+This is a basic implementation of a recursive summarizer using openai, GPT-3, and requests-html to crawl, parse, and summarize text of any length by chunk.
 
-Any summarizations made with this code come with no warranty (see MIT license) and should not be used for financial, medical, legal, or any other critical applications.
