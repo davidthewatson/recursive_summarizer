@@ -1,16 +1,19 @@
 import openai
 import os
-from time import time,sleep
 import textwrap
 import re
+import string
 
+from time import time,sleep
+from requests_html import HTMLSession
+from dotenv import load_dotenv
+
+load_dotenv()
+openai.api_key = os.environ.get("OPENAI_API_KEY")
 
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
         return infile.read()
-
-
-openai.api_key = open_file('openaiapikey.txt')
 
 
 def save_file(content, filepath):
@@ -45,17 +48,36 @@ def gpt3_completion(prompt, engine='text-davinci-002', temp=0.6, top_p=1.0, toke
             print('Error communicating with OpenAI:', oops)
             sleep(1)
 
+def get_page(page, selector):
+        session = HTMLSession()
+        r = session.get(page)
+        return r.html.find(selector, first=True)
+
+def count_words(text):
+    return sum([i.strip(string.punctuation).isalpha() for i in text.split()])
+
+
 
 if __name__ == '__main__':
-    alltext = open_file('input.txt')
-    chunks = textwrap.wrap(alltext, 2000)
-    result = list()
-    count = 0
-    for chunk in chunks:
-        count = count + 1
-        prompt = open_file('prompt.txt').replace('<<SUMMARY>>', chunk)
-        prompt = prompt.encode(encoding='ASCII',errors='ignore').decode()
-        summary = gpt3_completion(prompt)
-        print('\n\n\n', count, 'of', len(chunks), ' - ', summary)
-        result.append(summary)
+    index = 'http://localhost:8000/writing/'
+    session = HTMLSession()
+    r = session.get(index)
+    for link in r.html.links:
+         if link.find('writing') > 0 and link.find('technology') > 0 or link.find('diabetes') > 0:
+            link = f'http://localhost:8000{link}'
+            body = get_page(link, 'body')
+            alltext = body.text
+            word_count = count_words(alltext)
+            print(alltext)
+            print('\n\n\n', 'word count:\t', word_count)
+            chunks = textwrap.wrap(alltext, 1999)
+            result = list()
+            count = 0
+            for chunk in chunks:
+                count = count + 1
+                prompt = open_file('prompt.txt').replace('<<SUMMARY>>', chunk)
+                prompt = prompt.encode(encoding='ASCII',errors='ignore').decode()
+                summary = gpt3_completion(prompt)
+                print('\n\n\n', count, 'of', len(chunks), ' - ', summary)
+                result.append(summary)
     save_file('\n\n'.join(result), 'output_%s.txt' % time())
