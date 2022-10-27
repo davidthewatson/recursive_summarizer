@@ -15,7 +15,7 @@ The only thing missing is that you have to [get an OPENAI API Key](https://beta.
 
     export OPENAI_API_KEY="YOUR_KEY_GOES_HERE"
 
-After that, just adjust the crawling frontier URLs in the source to your liking. Mine is tuned for my custom CMS system that I wrote from scratch. 
+After that, just adjust the crawling frontier URLs in the source to your liking. Mine is tuned for my custom [cms](https://github.com/davidthewatson/cms) system that I wrote from scratch. 
 
 It starts with an index of content for which this crawler is designed to limit it's crawl to the corpus of text cascading from that index. It's generally easy to edit the filter to limit the crawl by keyword or whatever. 
 
